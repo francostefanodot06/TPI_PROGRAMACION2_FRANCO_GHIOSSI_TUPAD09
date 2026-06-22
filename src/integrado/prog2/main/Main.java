@@ -268,7 +268,9 @@ public class Main {
                         String agregarMas;
                         do {
                             System.out.print("Ingrese ID del Producto a comprar: ");
-                            int idProd = (int) leerLong();
+                            Long idProdLong = leerLong();
+                            int idProd = idProdLong.intValue(); 
+                            
                             System.out.print("Cantidad: ");
                             int cant = leerEntero();
                             

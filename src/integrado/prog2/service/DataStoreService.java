@@ -213,13 +213,20 @@ public class DataStoreService {
         throw new EntidadNoEncontradaException("Pedido no encontrado.");
     }
 
-    // REGISTRAR PEDIDO: Corregido con el manejo atómico de stock y mapeo correcto de paquetes
+   
     public void registrarPedido(Long idUsuario, FormaPago formaPago, List<int[]> items) 
-            throws EntidadNoEncontradaException, StockInvalidoException, NegocioException {
-        Usuario u = buscarUsuarioPorId(idUsuario);
-        if (items == null || items.isEmpty()) throw new NegocioException("El pedido debe tener al menos un detalle.");
+        throws EntidadNoEncontradaException, StockInvalidoException, NegocioException {
+    
+    Usuario u = buscarUsuarioPorId(idUsuario);
+    
+    
+    if (u == null) {
+        throw new EntidadNoEncontradaException("No se encontró un usuario activo con el ID: " + idUsuario);
+    }
+    
+    if (items == null || items.isEmpty()) throw new NegocioException("El pedido debe tener al menos un detalle.");
 
-        Pedido temporal = new Pedido(u, formaPago);
+    Pedido temporal = new Pedido(u, formaPago);
         List<Producto> productosAfectados = new ArrayList<>();
         List<Integer> stocksAnteriores = new ArrayList<>();
 
@@ -246,7 +253,7 @@ public class DataStoreService {
                 double subtotal = cantidad * p.getPrecio();
                 temporal.addDetallePedido(cantidad, subtotal, p);
                 
-                // Asignamos ID manual al detalle respetando el diagrama de clases
+                // Asigno ID manual al detalle respetando el diagrama de clases
                 temporal.getDetalles().get(temporal.getDetalles().size() - 1).setId(nextIdDetalle++);
             }
 
